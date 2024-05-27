@@ -1,1 +1,1 @@
-# personal-diary
+A Node.js backend application for a personal diary, featuring Express for server setup and utilizing a modular routing approach with routes defined in "routes.js". This project aims to provide a streamlined and efficient way to manage diary entries digitally.
