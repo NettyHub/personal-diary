@@ -1,6 +1,6 @@
 # Personal Diary 📖
 
-Welcome to the **Personal Diary App**! This application allows you to log your daily entries, view past entries, update, and delete them. It's built with a modern stack featuring a React frontend and a Node.js backend. This project is ideal for practicing full-stack development skills and can serve as a foundation for more complex projects.
+Welcome to the **Personal Diary**! This application allows you to log your daily entries, view past entries, update, and delete them. It's built with a modern stack featuring a React frontend and a Node.js backend. This project is ideal for practicing full-stack development skills and can serve as a foundation for more complex projects.
 
 ## Features
 
