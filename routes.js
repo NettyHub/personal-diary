@@ -10,12 +10,20 @@ let diaryEntries = [
     { id: 1, date: '2023-01-01', title: 'New Year', content: 'Celebrated new year at home.' },
 ];
 
+const findEntryById = (id) => {
+    return diaryEntries.find(d => d.id === parseInt(id));
+};
+
+const findEntryIndexById = (id) => {
+    return diaryEntries.findIndex(d => d.id === parseInt(id));
+};
+
 app.get('/diary', (req, res) => {
     res.json(diaryEntries);
 });
 
 app.get('/diary/:id', (req, res) => {
-    const entry = diaryEntries.find(d => d.id === parseInt(req.params.id));
+    const entry = findEntryById(req.params.id);
     if (!entry) return res.status(404).send('Diary entry not found.');
     res.json(entry);
 });
@@ -29,18 +37,22 @@ app.post('/diary', (req, res) => {
 });
 
 app.put('/diary/:id', (req, res) => {
-    const entry = diaryEntries.find(d => d.id === parseInt(req.params.id));
+    const entry = findEntryById(req.params.id);
     if (!entry) return res.status(404).send('Diary entry not found.');
 
-    const { date, title, content } = req.body;
-    entry.date = date;
-    entry.title = title;
-    entry.content = content;
+    updateEntry(entry, req.body);
     res.send(entry);
 });
 
+const updateEntry = (entry, data) => {
+    const { date, title, content } = data;
+    entry.date = date || entry.date;
+    entry.title = title || entry.title;
+    entry.content = content || entry.content;
+};
+
 app.delete('/diary/:id', (req, res) => {
-    const entryIndex = diaryEntries.findIndex(d => d.id === parseInt(req.params.id));
+    const entryIndex = findEntryIndexById(req.params.id);
     if (entryIndex < 0) return res.status(404).send('Diary entry not found.');
 
     diaryEntries = diaryEntries.filter(d => d.id !== parseInt(req.params.id));
