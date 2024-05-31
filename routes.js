@@ -10,6 +10,10 @@ let diaryEntries = [
     { id: 1, date: '2023-01-01', title: 'New Year', content: 'Celebrated new year at home.' },
 ];
 
+const getNextId = () => {
+    return diaryEntries.length === 0 ? 1 : Math.max(...diaryEntries.map(entry => entry.id)) + 1;
+};
+
 const findEntryById = (id) => {
     return diaryEntries.find(d => d.id === parseInt(id));
 };
@@ -18,8 +22,23 @@ const findEntryIndexById = (id) => {
     return diaryEntries.findIndex(d => d.id === parseInt(id));
 };
 
+const isValidEntry = (entry) => {
+    return entry.date && entry.title && entry.content;
+};
+
 app.get('/diary', (req, res) => {
     res.json(diaryEntries);
+});
+
+app.get('/diary/search', (req, res) => {
+    const { query } = req.query;
+    if (!query) {
+        return res.json(diaryEntries);
+    }
+    const filteredEntries = diaryEntries.filter(entry =>
+        entry.title.toLowerCase().includes(query.toLowerCase()) ||
+        entry.content.toLowerCase().includes(query.toLowerCase()));
+    res.json(filteredEntries);
 });
 
 app.get('/diary/:id', (req, res) => {
@@ -30,7 +49,9 @@ app.get('/diary/:id', (req, res) => {
 
 app.post('/diary', (req, res) => {
     const { date, title, content } = req.body;
-    const id = diaryEntries.length + 1;
+    if (!isValidEntry(req.body)) return res.status(400).send('Invalid data provided.');
+
+    const id = getNextId();
     const newEntry = { id, date, title, content };
     diaryEntries.push(newEntry);
     res.status(201).send(newEntry);
@@ -46,9 +67,12 @@ app.put('/diary/:id', (req, res) => {
 
 const updateEntry = (entry, data) => {
     const { date, title, content } = data;
+    if (!isValidEntry(data)) return false;
+  
     entry.date = date || entry.date;
     entry.title = title || entry.title;
     entry.content = content || entry.content;
+    return true;
 };
 
 app.delete('/diary/:id', (req, res) => {
