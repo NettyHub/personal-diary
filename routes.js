@@ -23,7 +23,7 @@ const findEntryIndexById = (id) => {
 };
 
 const isValidEntry = (entry) => {
-    return entry.date && entry.title && entry.content;
+    return entry && entry.date && entry.title && entry.content;
 };
 
 app.get('/diary', (req, res) => {
@@ -43,32 +43,34 @@ app.get('/diary/search', (req, res) => {
 
 app.get('/diary/:id', (req, res) => {
     const entry = findEntryById(req.params.id);
-    if (!entry) return res.status(404).send('Diary entry not found.');
+    if (!entry) return res.status(404).json({ error: 'Diary entry not found.' });
     res.json(entry);
 });
 
 app.post('/diary', (req, res) => {
     const { date, title, content } = req.body;
-    if (!isValidEntry(req.body)) return res.status(400).send('Invalid data provided.');
+    if (!isValidEntry(req.body)) return res.status(400).json({ error: 'Invalid data provided. Ensure date, title, and content are included.' });
 
     const id = getNextId();
     const newEntry = { id, date, title, content };
     diaryEntries.push(newEntry);
-    res.status(201).send(newEntry);
+    res.status(201).json(newEntry);
 });
 
 app.put('/diary/:id', (req, res) => {
     const entry = findEntryById(req.params.id);
-    if (!entry) return res.status(404).send('Diary entry not found.');
+    if (!entry) return res.status(404).json({ error: 'Diary entry not found.' });
 
-    updateEntry(entry, req.body);
-    res.send(entry);
+    const success = updateEntry(entry, req.body);
+    if (!success) return res.status(400).json({ error: 'Invalid update data provided.' });
+
+    res.json(entry);
 });
 
 const updateEntry = (entry, data) => {
     const { date, title, content } = data;
     if (!isValidEntry(data)) return false;
-  
+
     entry.date = date || entry.date;
     entry.title = title || entry.title;
     entry.content = content || entry.content;
@@ -77,10 +79,10 @@ const updateEntry = (entry, data) => {
 
 app.delete('/diary/:id', (req, res) => {
     const entryIndex = findEntryIndexById(req.params.id);
-    if (entryIndex < 0) return res.status(404).send('Diary entry not found.');
+    if (entryIndex < 0) return res.status(404).json({ error: 'Diary entry not found.' });
 
     diaryEntries = diaryEntries.filter(d => d.id !== parseInt(req.params.id));
-    res.send({ message: 'Diary entry deleted successfully.' });
+    res.json({ message: 'Diary entry deleted successfully.' });
 });
 
 const PORT = process.env.PORT || 3000;
