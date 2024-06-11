@@ -11,6 +11,7 @@ mongoose.connect(process.env.MONGO_URI, {
 const entrySchema = new mongoose.Schema({
     title: { type: String, required: [true, 'Title is required'] },
     content: { type: String, required: [true, 'Content is required'] },
+    tags: [{ type: String }], // Enhancement: Adding tags to entries
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
@@ -39,7 +40,12 @@ entrySchema.post('save', function(error, doc, next) {
     }
 });
 
-const Entry = mongoose.model('Entry', entryUtilsentrySchema);
+// Enhanced Functionality: Search entries by tags
+entrySchema.statics.findByTag = function(tag) {
+    return this.find({ tags: { $in: [tag] } });
+};
+
+const Entry = mongoose.model('Entry', entrySchema);
 const User = mongoose.model('User', userSchema);
 
 module.exports = { Entry, User };
