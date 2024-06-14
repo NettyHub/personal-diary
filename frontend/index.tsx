@@ -1,16 +1,16 @@
-// src/ConfigContext.tsx
-
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 
 interface ConfigContextType {
-  apiUrl: string | undefined;
+  apiUrl: string;
 }
 
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
-export const ConfigProvider: React.FC<{children: ReactNode, apiUrl: string | undefined}> = ({ children, apiUrl }) => {
+export const ConfigProvider: React.FC<{children: ReactNode, apiUrl: string}> = ({ children, apiUrl }) => {
+  const value = useMemo(() => ({ apiUrl }), [apiUrl]);
+
   return (
-    <ConfigContext.Provider value={{ apiUrl }}>
+    <ConfigContext.Provider value={value}>
       {children}
     </ConfigContext.Provider>
   );
@@ -25,14 +25,12 @@ export const useConfig = () => {
 };
 ```
 ```typescript
-// src/index.tsx
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import { ConfigProvider } from './ConfigContext';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || "";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -42,20 +40,3 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
-```
-```typescript
-// In any component, e.g., src/App.tsx or another component
-
-import React from 'react';
-import { useConfig } from './ConfigContext';
-
-const YourComponent = () => {
-  const { apiUrl } = useConfig(); // This is how you access the apiUrl anywhere in your app
-
-  // Use apiUrl for your API calls or any logic
-  console.log('API URL:', apiUrl);
-
-  return <div>Your Component with API URL: {apiUrl}</div>;
-};
-
-export default YourComponent;
