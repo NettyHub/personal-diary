@@ -1,4 +1,3 @@
-// ErrorBoundary.tsx
 import React from 'react';
 
 interface Props {
@@ -16,19 +15,26 @@ class ErrorBoundary extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromError(_: Error): State {
-    // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // You can also log the error to an error reporting service
-    console.error("ErrorBoundary caught an error", error, errorInfo);
+  componentDidCatch(error: Error, error.Info: React.ErrorInfo) {
+    console.error("ErrorBoundary caught an error", error, error.Info);
   }
+
+  reloadApp = () => {
+    window.location.reload();
+  };
 
   render() {
     if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return <h2>Something went wrong.</h2>;
+      return (
+        <div>
+          <h2>Something went wrong.</h2>
+          <p>We're sorry for the inconvenience. Please try reloading the page.</p>
+          <button onClick={this.reloadApp}>Reload</button>
+        </div>
+      );
     }
 
     return this.props.children;
@@ -36,23 +42,3 @@ class ErrorBoundary extends React.Component<Props, State> {
 }
 
 export default ErrorBoundary;
-```
-```tsx
-// Modified part of your ReactDOM.render in the entry file
-import ReactDOM from 'react-dom';
-import App from './App';
-import { ConfigProvider } from './ConfigContext';
-import ErrorBoundary from './ErrorBoundary'; // Import the ErrorBoundary
-
-const API_URL = process.env.REACT_APP_API_URL || "";
-
-ReactDOM.render(
-  <React.StrictMode>
-    <ErrorBoundary> {/* Wrap your components with ErrorBoundary */}
-      <ConfigProvider apiUrl={API_URL}>
-        <App />
-      </ConfigProvider>
-    </ErrorBoundary>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
