@@ -6,21 +6,29 @@ type DiaryEntry = {
   content: string;
 };
 
-const DiaryEntryComponent: React.FC<{ entry: DiaryEntry; onUpdate: (entry: DiaryEntry) => void }> = ({
+type UpdateEntryFunction = (entry: DiaryEntry) => void;
+
+const DiaryEntryComponent: React.FC<{ entry: DiaryEntry; onUpdate: UpdateEntryFunction }> = ({
   entry,
   onUpdate,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(entry.title);
   const [content, setContent] = useState(entry.content);
+  const [error, setError] = useState('');
 
   const handleUpdate = () => {
+    if (!title.trim() || !content.trim()) {
+      setError('Title and content cannot be empty.');
+      return;
+    }
     onUpdate({
       ...entry,
-      title,
-      content,
+      title: title.trim(),
+      content: content.trim(),
     });
     setIsEditing(false);
+    setError(''); // Reset error message upon successful update
   };
 
   return (
@@ -36,6 +44,7 @@ const DiaryEntryComponent: React.FC<{ entry: DiaryEntry; onUpdate: (entry: Diary
             value={content}
             onChange={(e) => setContent(e.target.value)}
           ></textarea>
+          {error && <p style={{color: 'red'}}>{error}</p>}
           <button onClick={handleUpdate}>Save</button>
         </div>
       ) : (
@@ -60,7 +69,7 @@ const DiaryApp: React.FC = () => {
   };
 
   const updateEntry = (updatedEntry: DiaryEntry) => {
-    setEntries(entries.map(entry => entry.id === updatedEntry.id ? updatedEntry : entry));
+    setEntries(entries.map(entry => (entry.id === updatedEntry.id ? updatedEntry : entry)));
   };
 
   return (
