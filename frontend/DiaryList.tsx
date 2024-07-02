@@ -14,17 +14,19 @@ type DiaryEntriesProps = {
 };
 
 const DiaryEntries: React.FC<DiaryEntriesProps> = ({ entries, onUpdate, onDelete }) => {
+  const renderEntry = (entry: Entry) => (
+    <li key={entry.id}>
+      <h2>{entry.title}</h2>
+      <p><em>{entry.date}</em></p>
+      <p>{entry.content.substring(0, 100)}...</p>
+      <button onClick={() => onUpdate(entry.id)}>Update</button>
+      <button onClick={() => onDelete(entry.id)}>Delete</button>
+    </li>
+  );
+
   return (
     <ul>
-      {entries.map((entry) => (
-        <li key={entry.id}>
-          <h2>{entry.title}</h2>
-          <p><em>{entry.date}</em></p>
-          <p>{entry.content.substring(0, 100)}...</p>
-          <button onClick={() => onUpdate(entry.id)}>Update</button>
-          <button onClick={() => onDelete(entry.id)}>Delete</button>
-        </li>
-      ))}
+      {entries.map(renderEntry)}
     </ul>
   );
 };
