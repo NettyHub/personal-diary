@@ -13,22 +13,19 @@ type DiaryEntriesProps = {
   onDelete: (id: number) => void;
 };
 
-const DiaryEntries: React.FC<DiaryEntriesProps> = ({ entries, onUpdate, onDelete }) => {
-  const renderEntry = (entry: Entry) => (
-    <li key={entry.id}>
-      <h2>{entry.title}</h2>
-      <p><em>{entry.date}</em></p>
-      <p>{entry.content.substring(0, 100)}...</p>
-      <button onClick={() => onUpdate(entry.id)}>Update</button>
-      <button onClick={() => onDelete(entry.id)}>Delete</button>
-    </li>
-  );
-
-  return (
-    <ul>
-      {entries.map(renderEntry)}
-    </ul>
-  );
-};
+const DiaryEntries: React.FC<DiaryEntriesProps> = ({ entries, onUpdate, onDelete }) => (
+  <ul>
+    {entries.map(({ id, title, date, content }) => (
+      <li key={id}>
+        <h2>{title}</h2>
+        <p><em>{date}</em></p>
+        {/* Limiting content display to 100 characters for preview */}
+        <p>{content.length > 100 ? `${content.substring(0, 100)}...` : content}</p>
+        <button onClick={() => onUpdate(id)}>Update</button>
+        <button onClick={() => onDelete(id)}>Delete</button>
+      </li>
+    ))}
+  </ul>
+);
 
 export default DiaryEntries;
