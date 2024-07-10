@@ -15,14 +15,46 @@ const DiaryEntryForm: React.FC<DiaryEntryFormProps> = ({ addDiaryEntry }) => {
   const [date, setDate] = useState('');
   const [content, setContent] = useState('');
 
+  const [errors, setErrors] = useState({
+    title: '',
+    date: '',
+    content: '',
+  });
+
+  const validateForm = () => {
+    let isValid = true;
+    let errors = { title: '', date: '', content: '' };
+
+    if (!title) {
+      errors.title = 'Title cannot be empty';
+      isValid = false;
+    }
+    if (!date) {
+      errors.date = 'Date cannot be empty';
+      isValid = false;
+    }
+    if (!content) {
+      errors.content = 'Content cannot be empty';
+      isValid = false;
+    }
+
+    setErrors(errors);
+    return isValid;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     addDiaryEntry({ title, date, content });
 
     setTitle('');
     setDate('');
     setContent('');
+    setErrors({ title: '', date: '', content: '' });
   };
 
   return (
@@ -36,6 +68,7 @@ const DiaryEntryForm: React.FC<DiaryEntryFormProps> = ({ addDiaryEntry }) => {
           onChange={(e) => setTitle(e.target.value)}
           required
         />
+        {errors.title && <div style={{color: 'red'}}>{errors.title}</div>}
       </div>
       <div>
         <label htmlFor="date">Date</label>
@@ -46,6 +79,7 @@ const DiaryEntryForm: React.FC<DiaryEntryFormProps> = ({ addDiaryEntry }) => {
           onChange={(e) => setDate(e.target.value)}
           required
         />
+        {errors.date && <div style={{color: 'red'}}>{errors.date}</div>}
       </div>
       <div>
         <label htmlFor="content">Content</label>
@@ -55,6 +89,7 @@ const DiaryEntryForm: React.FC<DiaryEntryFormProps> = ({ addDiaryEntry }) => {
           onChange={(e) => setContent(e.target.value)}
           required
         />
+        {errors.content && <div style={{color: 'red'}}>{errors.content}</div>}
       </div>
       <button type="submit">Add Entry</button>
     </form>
