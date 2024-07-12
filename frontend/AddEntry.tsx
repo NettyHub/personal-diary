@@ -21,19 +21,22 @@ const DiaryEntryForm: React.FC<DiaryEntryFormProps> = ({ addDiaryEntry }) => {
     content: '',
   });
 
-  const validateForm = () => {
+  const validateForm = (): boolean => {
     let isValid = true;
     let errors = { title: '', date: '', content: '' };
 
-    if (!title) {
+    // Ensures strings are treated safely
+    const safeTrim = (str: string) => str.trim();
+
+    if (!safeTrim(title)) {
       errors.title = 'Title cannot be empty';
       isValid = false;
     }
-    if (!date) {
+    if (!safeTrim(date)) {
       errors.date = 'Date cannot be empty';
       isValid = false;
     }
-    if (!content) {
+    if (!safeTrim(content)) {
       errors.content = 'Content cannot be empty';
       isValid = false;
     }
@@ -45,16 +48,25 @@ const DiaryEntryForm: React.FC<DiaryEntryFormProps> = ({ addDiaryEntry }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
+    try {
+      if (!validateForm()) {
+        return;
+      }
+
+      const newEntry = { title, date, content };
+      // Additional validation or sanitization can be performed here if necessary
+      addDiaryEntry(newEntry);
+
+      setTitle('');
+      setDate('');
+      setContent('');
+      setErrors({ title: '', date: '', content: '' });
+    } catch(error) {
+      console.error("Failed to submit entry:", error);
+      // Implement or invoke more sophisticated error handling/logic as needed
+      // Optionally, set error state for user feedback
+      setErrors(prev => ({ ...prev, content: "An unexpected error occurred. Please try again."}));
     }
-
-    addDiaryEntry({ title, date, content });
-
-    setTitle('');
-    setDate('');
-    setContent('');
-    setErrors({ title: '', date: '', content: '' });
   };
 
   return (
