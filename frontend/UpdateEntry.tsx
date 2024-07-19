@@ -1,42 +1,50 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useCallback } from 'react';
+
+interface DiaryEntry {
+  id: number;
+  title: string;
+  date: string;
+  content: string;
+}
 
 interface UpdateDiaryEntryProps {
-  initialEntry: {
-    id: number;
-    title: string;
-    date: string;
-    content: string;
-  };
-  onUpdateEntry: (id: number, updatedEntry: { title: string; date: string; content: string }) => void;
+  initialEntry: DiaryEntry;
+  onUpdateEntry: (id: number, updatedEntry: Omit<DiaryEntry, 'id'>) => void;
 }
 
 const UpdateDiaryEntry: React.FC<UpdateDiaryEntryProps> = ({ initialEntry, onUpdateEntry }) => {
-  const [title, setTitle] = useState(initialEntry.title);
-  const [date, setDate] = useState(initialEntry.date);
-  const [content, setContent] = useState(initialEntry.content);
+  const [entry, setEntry] = useState<Omit<DiaryEntry, 'id'>>({
+    title: initialEntry.title,
+    date: initialEntry.date,
+    content: initialEntry.content,
+  });
 
-  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
-  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => setDate(e.target.value);
-  const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value);
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setEntry(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }, []);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLForm, Event>) => {
     e.preventDefault();
-    onUpdateEntry(initialEntry.id, { title, date, content });
+    onUpdateEntry(initialEntry.id, entry);
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div>
         <label htmlFor="title">Title:</label>
-        <input id="title" type="text" value={title} onChange={handleTitleChange} />
+        <input id="title" name="title" type="text" value={entry.title} onChange={handleChange} />
       </div>
       <div>
         <label htmlFor="date">Date:</label>
-        <input id="date" type="date" value={date} onChange={handleDateChange} />
+        <input id="date" name="date" type="date" value={entry.date} onChange={handleChange} />
       </div>
       <div>
         <label htmlFor="content">Content:</label>
-        <textarea id="content" value={content} onChange={handleContentChange}></textarea>
+        <textarea id="content" name="content" value={entry.content} onChange={handleChange}></textarea>
       </div>
       <button type="submit">Update Entry</button>
     </form>
