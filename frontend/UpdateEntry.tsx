@@ -27,7 +27,15 @@ const UpdateDiaryEntry: React.FC<UpdateDiaryEntryProps> = ({ initialEntry, onUpd
     }));
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLForm, Event>) => {
+  const resetForm = () => {
+    setEntry({
+      title: initialEntry.title,
+      date: initialEntry.date,
+      content: initialEntry.content,
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onUpdateEntry(initialEntry.id, entry);
   };
@@ -41,12 +49,13 @@ const UpdateDiaryEntry: React.FC<UpdateDiaryEntryProps> = ({ initialEntry, onUpd
       <div>
         <label htmlFor="date">Date:</label>
         <input id="date" name="date" type="date" value={entry.date} onChange={handleChange} />
-      </div>
+      </v>
       <div>
         <label htmlFor="content">Content:</label>
         <textarea id="content" name="content" value={entry.content} onChange={handleChange}></textarea>
       </div>
       <button type="submit">Update Entry</button>
+      <button type="button" onClick={resetForm}>Reset</button>
     </form>
   );
 };
