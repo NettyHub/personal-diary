@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Environment Example</title>
+</head>
+<body>
+    <h1>Environment Variables Example</h1>
+    <script>
+        const backendUrl = process.env.BACKEND_URL || 'default-value';
+        const apiKey = process.env.API_KEY || 'default-value';
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('envDisplay').innerHTML = `Backend URL: ${backendUrl}<br>API Key: ${apiKey}`;
+        });
+    </script>
+    <div id="envDisplay">
+    </div>
+</body>
+</html>
